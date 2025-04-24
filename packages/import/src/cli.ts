@@ -5,13 +5,14 @@ import * as inquirer from "inquirer";
 import { importIssues } from "./importIssues";
 import { asanaCsvImport } from "./importers/asanaCsv";
 import { githubImport } from "./importers/github";
+import { gitlabCsvImporter } from "./importers/gitlabCsv";
 import { jiraCsvImport } from "./importers/jiraCsv";
 import { linearCsvImporter } from "./importers/linearCsv";
+import { notionCsvImport } from "./importers/notionCsv";
 import { pivotalCsvImport } from "./importers/pivotalCsv";
 import { shortcutCsvImport } from "./importers/shortcutCsv";
 import { trelloJsonImport } from "./importers/trelloJson";
 import { ImportAnswers } from "./types";
-import { gitlabCsvImporter } from "./importers/gitlabCsv";
 
 inquirer.registerPrompt("filePath", require("inquirer-file-path"));
 
@@ -28,6 +29,10 @@ inquirer.registerPrompt("filePath", require("inquirer-file-path"));
         name: "service",
         message: "Which service would you like to import from?",
         choices: [
+          {
+            name: "Custom CSV (see Common Room's Notion docs for instructions)",
+            value: "notion",
+          },
           {
             name: "GitHub",
             value: "github",
@@ -67,6 +72,9 @@ inquirer.registerPrompt("filePath", require("inquirer-file-path"));
     // TODO: Validate Linear API
     let importer;
     switch (importAnswers.service) {
+      case "notion":
+        importer = await notionCsvImport();
+        break;
       case "github":
         importer = await githubImport();
         break;
